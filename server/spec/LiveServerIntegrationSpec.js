@@ -1,6 +1,8 @@
 var request = require('request');
 var expect = require('chai').expect;
-
+/*var jsdom = require('jsdom').jsdom;
+var myWindow = jsdom().createWindow();
+var $ = require('jQuery');*/
 
 /*----------------- tests TODO
 - send back response code if post request missing parameter (403??)
@@ -74,11 +76,68 @@ describe('server', function() {
     });
   });
 
+  it('should respond with details about the created object', function(done) {
+    var requestParams = {method: 'POST',
+      uri: 'http://127.0.0.1:3000/classes/messages',
+      json: {
+        username: 'Jono',
+        message: 'Do my bidding!'}
+    };
+
+    request(requestParams, function(error, response, body) {
+      // Now if we request the log, that message we posted should be there:
+      expect(typeof body.createdAt).to.equal('string');
+      expect(typeof body.objectId).to.equal('number');
+      done();
+    });
+  });
+
   it('Should 404 when asked for a nonexistent endpoint', function(done) {
     request('http://127.0.0.1:3000/arglebargle', function(error, response, body) {
       expect(response.statusCode).to.equal(404);
       done();
     });
+  });
+
+  it('Should 200 when asked for a existent endpoint with arguments', function(done) {
+    request('http://127.0.0.1:3000/classes/messages/arglebargle', function(error, response, body) {
+      expect(response.statusCode).to.equal(200);
+      done();
+    });
+  });
+  
+  it('Should 400 when sent a non-parseable POST body', function(done) {
+    var requestParams = {method: 'POST',
+      uri: 'http://127.0.0.1:3000/classes/messages?name=asdf&message=test',
+      json: true
+    };
+    
+    request(requestParams, function(error, response, body) {
+      expect(response.statusCode).to.equal(400);
+      done();
+    });
+    
+
+    /*$.ajax({
+      url: 'http://127.0.0.1:3000/classes/messages',
+      type: 'POST',
+      data: message,
+      contentType: 'application/json',
+      complete: function(response) {
+        expect(response.statusCode).to.equal(400);
+      }
+    });*/
+/*    var xhr = new XMLHttpRequest();
+    
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState == XMLHttpRequest.DONE) {
+        expect(xhr.status).to.equal(400);
+      }
+    };
+
+    xhr.open('POST', 'http://127.0.0.1:3000/classes/messages', true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.send(message);*/
   });
 
 

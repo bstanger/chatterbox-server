@@ -41,7 +41,7 @@ var result = {
   username: 'test username'
 };
 var data = {
-  results: [result]
+  results: []
 };
 
 var requestHandler = function(request, response) {
@@ -73,9 +73,8 @@ var requestHandler = function(request, response) {
   // which includes the status and all headers.
   response.writeHead(statusCode, headers);
 
-  if (request.url !== '/classes/messages') {
+  if (request.url.slice(0, 17) !== '/classes/messages') {
     var statusCode = 404;
-
     response.writeHead(statusCode, headers);
     response.end();
     return;
@@ -85,33 +84,39 @@ var requestHandler = function(request, response) {
     var responseBody = JSON.stringify(data);
     response.end(responseBody);
   } else if (request.method === 'POST') {
-
     statusCode = 201;
     var body = '';
-
+    // debugger;
     request.on('data', function (data) {
       body += data;
 
       // Too much POST data, kill the connection!
       if (body.length > 1e6) {
         request.connection.destroy();
+        statusCode = 413;
       }
     });
 
     request.on('end', function () {
-      var post = JSON.parse(body);
-      var date = new Date();
-      post.createdAt = date.toJSON();
-      post.objectId = objectIdCounter++;
-      data.results.push(post);    
-      var responseBody = JSON.stringify({
-        status: 200,
-        success: 'Updated Successfully'
-      });
+      try {
+        var post = JSON.parse(body);
+        var date = new Date();
+        post.createdAt = date.toJSON();
+        post.objectId = objectIdCounter++;
+        data.results.push(post);    
+        var responseBody = JSON.stringify({
+          status: 200,
+          success: 'Updated Successfully',
+          createdAt: post.createdAt,
+          objectId: post.objectId
+        });
+      } catch (error) {
+        responseBody = error.toString();
+        statusCode = 400; 
+      }
+      response.writeHead(statusCode, headers);
       response.end(responseBody);
-      return;
     });
-
   } else {
     response.end();
   }
