@@ -116,28 +116,6 @@ describe('server', function() {
       expect(response.statusCode).to.equal(400);
       done();
     });
-    
-
-    /*$.ajax({
-      url: 'http://127.0.0.1:3000/classes/messages',
-      type: 'POST',
-      data: message,
-      contentType: 'application/json',
-      complete: function(response) {
-        expect(response.statusCode).to.equal(400);
-      }
-    });*/
-/*    var xhr = new XMLHttpRequest();
-    
-    xhr.onreadystatechange = function() {
-      if (xhr.readyState == XMLHttpRequest.DONE) {
-        expect(xhr.status).to.equal(400);
-      }
-    };
-
-    xhr.open('POST', 'http://127.0.0.1:3000/classes/messages', true);
-    xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.send(message);*/
   });
 
 
