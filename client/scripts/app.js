@@ -27,23 +27,23 @@ var app = {
 
     // Fetch previous messages
     app.startSpinner();
-    //app.fetch(false);
+    app.fetch(false);
 
     // Poll for new messages
-/*    setInterval(function() {
+    setInterval(function() {
       app.fetch(true);
-    }, 3000);*/
+    }, 3000);
   },
 
   send: function(message) {
     app.startSpinner();
 
     // POST the message to the server
-    debugger
     $.ajax({
       url: app.server,
       type: 'POST',
-      data: message,
+      data: JSON.stringify(message),
+      contentType: 'application/json',
       success: function (data) {
         // Clear messages input
         app.$message.val('');
@@ -61,7 +61,7 @@ var app = {
     $.ajax({
       url: app.server,
       type: 'GET',
-      data: { order: '-createdAt' },
+      //data: { order: '-createdAt' },
       contentType: 'application/json',
       success: function(data) {
         // Don't bother if we have nothing to work with
@@ -72,7 +72,7 @@ var app = {
 
         // Get the last message
         var mostRecentMessage = data.results[data.results.length - 1];
-
+        
         // Only bother updating the DOM if we have a new message
         if (mostRecentMessage.objectId !== app.lastMessageId) {
           // Update the UI with the fetched rooms
@@ -163,7 +163,7 @@ var app = {
     }
 
     var $message = $('<br><span/>');
-    $message.text(message.text).appendTo($chat);
+    $message.text(message.message).appendTo($chat);
 
     // Add the message to the UI
     app.$chats.append($chat);
