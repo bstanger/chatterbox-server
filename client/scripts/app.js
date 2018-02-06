@@ -3,7 +3,7 @@ var app = {
 
   //TODO: The current 'handleUsernameClick' function just toggles the class 'friend'
   //to all messages sent by the user
-  server: 'http://parse.CAMPUS.hackreactor.com/chatterbox/classes/messages',
+  server: 'http://127.0.0.1:3000/classes/messages',
   username: 'anonymous',
   roomname: 'lobby',
   lastMessageId: 0,
@@ -27,18 +27,19 @@ var app = {
 
     // Fetch previous messages
     app.startSpinner();
-    app.fetch(false);
+    //app.fetch(false);
 
     // Poll for new messages
-    setInterval(function() {
+/*    setInterval(function() {
       app.fetch(true);
-    }, 3000);
+    }, 3000);*/
   },
 
   send: function(message) {
     app.startSpinner();
 
     // POST the message to the server
+    debugger
     $.ajax({
       url: app.server,
       type: 'POST',
@@ -214,7 +215,7 @@ var app = {
   handleSubmit: function(event) {
     var message = {
       username: app.username,
-      text: app.$message.val(),
+      message: app.$message.val(),
       roomname: app.roomname || 'lobby'
     };
 
